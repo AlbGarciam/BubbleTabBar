@@ -7,6 +7,7 @@ protocol BubbleTabBarViewDelegate: AnyObject {
 
 final class BubbleTabBarView: UIView {
     private let tabsStackView = UIStackView()
+    private let cardView = UIView()
     private let backgroundView = UIView()
     weak var delegate: BubbleTabBarViewDelegate?
     var font: UIFont = .systemFont(ofSize: 8, weight: .semibold) {
@@ -21,6 +22,11 @@ final class BubbleTabBarView: UIView {
         didSet {
             backgroundView.backgroundColor = backgroundViewColor
         }
+    }
+
+    override var backgroundColor: UIColor? {
+        get { cardView.backgroundColor }
+        set { cardView.backgroundColor = newValue }
     }
 
     override var tintColor: UIColor! {
@@ -87,8 +93,14 @@ private extension BubbleTabBarView {
     }
 
     func configureBackground() {
-        layer.cornerRadius = Constants.backgroundCornerRadius
-        layer.masksToBounds = true
+        cardView.translatesAutoresizingMaskIntoConstraints = false
+        cardView.layer.cornerRadius = Constants.backgroundCornerRadius
+        cardView.layer.masksToBounds = true
+        insertSubview(cardView, at: 0)
+        cardView.leadingAnchor.constraint(equalTo: leadingAnchor).isActive = true
+        cardView.trailingAnchor.constraint(equalTo: trailingAnchor).isActive = true
+        cardView.topAnchor.constraint(equalTo: topAnchor).isActive = true
+        cardView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
     }
 
     func configureBackgroundView() {

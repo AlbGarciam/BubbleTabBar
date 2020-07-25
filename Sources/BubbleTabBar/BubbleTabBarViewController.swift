@@ -27,6 +27,16 @@ open class BubbleTabBarViewController: UIViewController {
         set { tabBarView.tintColor = newValue }
     }
 
+    public var tabBarBackgroundColor: UIColor {
+        get { tabBarView.backgroundColor ?? .clear }
+        set { tabBarView.backgroundColor = newValue }
+    }
+
+    public var tabBarShadowColor: CGColor? {
+        get { tabBarView.layer.shadowColor }
+        set { tabBarView.layer.applyShadow(color: newValue) }
+    }
+
     open override func viewDidLoad() {
         super.viewDidLoad()
         configure()
