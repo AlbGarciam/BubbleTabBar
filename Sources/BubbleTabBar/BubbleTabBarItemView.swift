@@ -1,11 +1,12 @@
 import UIKit
 
 struct BubbleTabBarItem {
-    public let icon: UIImage
-    public let title: String
+    let expandedIcon: UIImage
+    let collapsedIcon: UIImage
+    let title: String
 
-    public init(icon: UIImage, title: String) {
-        (self.icon, self.title) = (icon, title)
+    init(expandedIcon: UIImage, collapsedIcon: UIImage, title: String) {
+        (self.expandedIcon, self.collapsedIcon, self.title) = (expandedIcon, collapsedIcon, title)
     }
 }
 
@@ -19,6 +20,8 @@ final class BubbleTabBarItemView: UIView {
     private lazy var stackView = UIStackView(arrangedSubviews: [imageView, titleLabel])
     weak var delegate: BubbleTabBarItemViewDelegate?
     var isCollapsed: Bool { titleLabel.isHidden }
+    private var expandedIcon: UIImage?
+    private var collapsedIcon: UIImage?
 
     override var tintColor: UIColor! {
         didSet {
@@ -42,8 +45,14 @@ final class BubbleTabBarItemView: UIView {
         configure()
     }
 
-    func setIcon(_ icon: UIImage) {
-        imageView.image = icon
+    func setExpandedIcon(_ icon: UIImage) {
+        expandedIcon = icon
+        imageView.image = isCollapsed ? collapsedIcon : expandedIcon
+    }
+
+    func setCollapsedIcon(_ icon: UIImage) {
+        collapsedIcon = icon
+        imageView.image = isCollapsed ? collapsedIcon : expandedIcon
     }
 
     func setTitle(_ title: String) {
@@ -60,6 +69,7 @@ final class BubbleTabBarItemView: UIView {
         UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
             self.titleLabel.isHidden = true
             self.titleLabel.alpha = 0
+            self.imageView.image = self.collapsedIcon
         }, completion: nil)
     }
 
@@ -68,6 +78,7 @@ final class BubbleTabBarItemView: UIView {
         UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
             self.titleLabel.isHidden = false
             self.titleLabel.alpha = 1
+            self.imageView.image = self.expandedIcon
         }, completion: nil)
     }
 }

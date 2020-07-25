@@ -51,7 +51,8 @@ final class BubbleTabBarView: UIView {
             .map {
                 let view = BubbleTabBarItemView()
                 view.setTitle($0.title)
-                view.setIcon($0.icon)
+                view.setCollapsedIcon($0.collapsedIcon)
+                view.setExpandedIcon($0.expandedIcon)
                 view.tintColor = self.tintColor
                 view.setTitleFont(self.font)
                 view.collapse()

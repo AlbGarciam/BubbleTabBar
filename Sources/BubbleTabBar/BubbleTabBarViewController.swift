@@ -1,11 +1,12 @@
 import UIKit
 
 public protocol BubbleViewController {
-    var icon: UIImage { get }
+    var expandedIcon: UIImage { get }
+    var collapsedIcon: UIImage { get }
     var tabBarTitle: String { get }
 }
 
-public class BubbleTabBarViewController: UIViewController {
+open class BubbleTabBarViewController: UIViewController {
     fileprivate typealias Controller = BubbleViewController & UIViewController
     private lazy var tabBarView = BubbleTabBarView()
     private lazy var containerView = UIView()
@@ -26,7 +27,7 @@ public class BubbleTabBarViewController: UIViewController {
         set { tabBarView.tintColor = newValue }
     }
 
-    public override func viewDidLoad() {
+    open override func viewDidLoad() {
         super.viewDidLoad()
         configure()
     }
@@ -38,7 +39,9 @@ public class BubbleTabBarViewController: UIViewController {
     public func setViewControllers(_ controllers: [BubbleViewController & UIViewController]) {
         removeControllers()
         viewControllers = controllers
-        let tabBarItems = controllers.map { BubbleTabBarItem(icon: $0.icon, title: $0.tabBarTitle) }
+        let tabBarItems = controllers.map {
+            BubbleTabBarItem(expandedIcon: $0.expandedIcon, collapsedIcon: $0.collapsedIcon, title: $0.tabBarTitle)
+        }
         tabBarView.setItems(tabBarItems)
         controllers.forEach {
             $0.willMove(toParent: self)
