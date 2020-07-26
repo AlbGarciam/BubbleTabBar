@@ -122,7 +122,7 @@ private extension BubbleTabBarViewController {
         tabBarView.layoutIfNeeded()
         let destinationFrame = tabBarView.convert(tabBarView.bounds, to: view)
         bottomConstraint?.constant = view.bounds.height - destinationFrame.minY
-        let animations = { [weak self] in
+        let animations: () -> Void = { [weak self] in
             self?.view.layoutIfNeeded()
         }
         if animated {
@@ -135,9 +135,8 @@ private extension BubbleTabBarViewController {
 
     func showTabBar(animated: Bool) {
         tabBarView.layoutIfNeeded()
-        let destinationFrame = tabBarView.convert(tabBarView.bounds, to: view)
         bottomConstraint?.constant = Constants.verticalPadding
-        let animations = { [weak self] in
+        let animations: () -> Void = { [weak self] in
             self?.view.layoutIfNeeded()
         }
         if animated {
