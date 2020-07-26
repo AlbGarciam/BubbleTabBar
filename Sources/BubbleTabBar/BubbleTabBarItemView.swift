@@ -65,7 +65,7 @@ final class BubbleTabBarItemView: UIView {
     }
 
     func collapse() {
-        let options: UIView.AnimationOptions = [.curveEaseInOut, .beginFromCurrentState]
+        let options: UIView.AnimationOptions = [.curveEaseInOut, .layoutSubviews]
         UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
             self.titleLabel.isHidden = true
             self.titleLabel.alpha = 0
@@ -74,7 +74,7 @@ final class BubbleTabBarItemView: UIView {
     }
 
     func expand() {
-        let options: UIView.AnimationOptions = [.curveEaseInOut, .beginFromCurrentState]
+        let options: UIView.AnimationOptions = [.curveEaseInOut, .layoutSubviews]
         UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
             self.titleLabel.isHidden = false
             self.titleLabel.alpha = 1

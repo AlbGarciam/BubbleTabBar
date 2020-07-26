@@ -125,7 +125,7 @@ private extension BubbleTabBarView {
     func moveBackground(to subview: UIView) {
         subview.layoutIfNeeded()
         let destinationFrame = subview.convert(subview.frame, to: self)
-        let options: UIView.AnimationOptions = [.curveEaseInOut, .beginFromCurrentState]
+        let options: UIView.AnimationOptions = [.curveEaseInOut, .layoutSubviews]
         UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
             self.backgroundView.frame = destinationFrame
         }, completion: nil)
