@@ -68,7 +68,16 @@ final class BubbleTabBarView: UIView {
             .forEach { self.tabsStackView.addArrangedSubview($0) }
         if let firstTab = tabsStackView.subviews.first as? BubbleTabBarItemView {
             firstTab.expand()
+            tabsStackView.layoutIfNeeded()
             moveBackground(to: firstTab)
+        }
+    }
+
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        let tabs = tabsStackView.subviews
+        if let selected = tabs.compactMap { $0 as? BubbleTabBarItemView }.first(where: { !$0.isCollapsed }) {
+            moveBackground(to: selected)
         }
     }
 
@@ -124,7 +133,7 @@ private extension BubbleTabBarView {
 
     func moveBackground(to subview: UIView) {
         subview.layoutIfNeeded()
-        let destinationFrame = subview.convert(subview.frame, to: self)
+        let destinationFrame = subview.convert(subview.bounds, to: self)
         let options: UIView.AnimationOptions = [.curveEaseInOut, .layoutSubviews]
         UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
             self.backgroundView.frame = destinationFrame
