@@ -136,8 +136,8 @@ private extension BubbleTabBarView {
         UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
             newTab.expand()
             oldTab?.collapse()
-            self.moveBackground(to: newTab)
         }, completion: { _ in
+            self.moveBackground(to: newTab)
             self.layoutIfNeeded()
         })
     }
