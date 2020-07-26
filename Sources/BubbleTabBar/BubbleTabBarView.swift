@@ -80,6 +80,14 @@ final class BubbleTabBarView: UIView {
             moveBackground(to: selected)
         }
     }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let tabs = tabsStackView.subviews
+        if let selected = tabs.compactMap { $0 as? BubbleTabBarItemView }.first(where: { !$0.isCollapsed }) {
+            moveBackground(to: selected)
+        }
+    }
 }
 
 private extension BubbleTabBarView {
@@ -125,7 +133,10 @@ private extension BubbleTabBarView {
 
     func moveBackground(to subview: UIView) {
         subview.layoutIfNeeded()
-        let destinationFrame = subview.convert(subview.bounds, to: self)
+        var destinationFrame = subview.convert(subview.bounds, to: self)
+        let maxXPosition = max(Constants.horizontalPadding, destinationFrame.minX)
+        let minYPosition = min(Constants.verticalPadding, destinationFrame.minY)
+        destinationFrame.origin = CGPoint(x: maxXPosition, y: minYPosition)
         let options: UIView.AnimationOptions = [.curveEaseInOut, .layoutSubviews]
         UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
             self.backgroundView.frame = destinationFrame
