@@ -166,7 +166,7 @@ extension BubbleTabBarViewController: UINavigationControllerDelegate {
                                      willShow viewController: UIViewController,
                                      animated: Bool) {
         let shouldDisplayTabBar = viewController.hidesBottomBarWhenPushed
-        shouldDisplayTabBar ? showTabBar(animated: animated) : hideTabBar(animated: animated)
+        !shouldDisplayTabBar ? showTabBar(animated: animated) : hideTabBar(animated: animated)
     }
 }
 
