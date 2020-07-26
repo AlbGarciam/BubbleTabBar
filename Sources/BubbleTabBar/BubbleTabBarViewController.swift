@@ -74,7 +74,6 @@ private extension BubbleTabBarViewController {
     func configureTabBarView() {
         tabBarView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tabBarView)
-        tabBarView.heightAnchor.constraint(equalToConstant: Constants.tabBarHeight).isActive = true
         tabBarView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
                                            constant: Constants.verticalPadding).isActive = true
         tabBarView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -131,7 +130,6 @@ extension BubbleTabBarViewController: BubbleTabBarViewDelegate {
 //MARK: - Constants
 private extension BubbleTabBarViewController {
     struct Constants {
-        static let tabBarHeight: CGFloat = 44
         static let tabBarMaxWidth: CGFloat = 414
         static let horizontalPadding: CGFloat = 8
         static let verticalPadding: CGFloat = -8

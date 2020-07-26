@@ -71,6 +71,14 @@ final class BubbleTabBarView: UIView {
             moveBackground(to: firstTab)
         }
     }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let tabs = tabsStackView.subviews
+        if let selected = tabs.compactMap { $0 as? BubbleTabBarItemView }.first(where: { !$0.isCollapsed }) {
+            moveBackground(to: selected)
+        }
+    }
 }
 
 private extension BubbleTabBarView {

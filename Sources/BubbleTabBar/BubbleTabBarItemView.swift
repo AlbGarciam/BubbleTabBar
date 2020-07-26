@@ -96,8 +96,10 @@ private extension BubbleTabBarItemView {
     private func configureStackView() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
+        stackView.distribution = .fillProportionally
         stackView.setContentHuggingPriority(.required, for: .horizontal)
         stackView.setContentCompressionResistancePriority(.required, for: .vertical)
+        stackView.spacing = Constants.spacing
         addSubview(stackView)
         stackView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalPadding).isActive = true
@@ -106,6 +108,7 @@ private extension BubbleTabBarItemView {
     }
 
     private func configureImageView() {
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         imageView.widthAnchor.constraint(equalToConstant: Constants.imageSize.width).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: Constants.imageSize.height).isActive = true
@@ -127,7 +130,8 @@ private extension BubbleTabBarItemView {
 private extension BubbleTabBarItemView {
     struct Constants {
         static let horizontalPadding: CGFloat = 20
-        static let verticalPadding: CGFloat = 5
-        static let imageSize: CGSize = .init(width: 28, height: 28)
+        static let verticalPadding: CGFloat = 10
+        static let spacing: CGFloat = 6
+        static let imageSize: CGSize = .init(width: 24, height: 24)
     }
 }
