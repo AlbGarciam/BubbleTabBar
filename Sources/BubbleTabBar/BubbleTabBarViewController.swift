@@ -121,11 +121,12 @@ private extension BubbleTabBarViewController {
     func hideTabBar(animated: Bool) {
         tabBarView.layoutIfNeeded()
         let destinationFrame = tabBarView.convert(tabBarView.bounds, to: view)
-        self?.bottomConstraint?.constant = view.bounds.height - destinationFrame.minY
+        bottomConstraint?.constant = view.bounds.height - destinationFrame.minY
         let animations = { [weak self] in
             self?.view.layoutIfNeeded()
         }
         if animated {
+            let options: UIView.AnimationOptions = [.curveEaseInOut, .layoutSubviews]
             UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: animations, completion: nil)
         } else {
             animations()
@@ -135,11 +136,12 @@ private extension BubbleTabBarViewController {
     func showTabBar(animated: Bool) {
         tabBarView.layoutIfNeeded()
         let destinationFrame = tabBarView.convert(tabBarView.bounds, to: view)
-        self?.bottomConstraint?.constant = Constants.verticalPadding
+        bottomConstraint?.constant = Constants.verticalPadding
         let animations = { [weak self] in
             self?.view.layoutIfNeeded()
         }
         if animated {
+            let options: UIView.AnimationOptions = [.curveEaseInOut, .layoutSubviews]
             UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: animations, completion: nil)
         } else {
             animations()
