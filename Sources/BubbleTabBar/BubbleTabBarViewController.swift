@@ -9,7 +9,6 @@ public protocol BubbleViewController {
 open class BubbleTabBarViewController: UIViewController {
     fileprivate typealias Controller = BubbleViewController & UIViewController
     private lazy var tabBarView = BubbleTabBarView()
-    private lazy var containerView = UIView()
     private var viewControllers: [Controller] = []
     private weak var currentController: Controller?
     private var bottomConstraint: NSLayoutConstraint?
@@ -69,7 +68,6 @@ open class BubbleTabBarViewController: UIViewController {
 //MARK: - Private methods
 private extension BubbleTabBarViewController {
     func configure() {
-        configureContainerView()
         configureTabBarView()
     }
 
@@ -88,15 +86,6 @@ private extension BubbleTabBarViewController {
         tabBarView.delegate = self
     }
 
-    func configureContainerView() {
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(containerView)
-        containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        containerView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-    }
-
     func removeControllers() {
         viewControllers.forEach {
             $0.removeFromParent()
@@ -106,16 +95,16 @@ private extension BubbleTabBarViewController {
     }
 
     func setCurrentController(_ controller: Controller) {
-        containerView.subviews.forEach { $0.removeFromSuperview() }
+        currentController?.view.removeFromSuperview()
         controller.view.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(controller.view)
-        controller.view.leadingAnchor.constraint(equalTo: containerView.leadingAnchor).isActive = true
-        controller.view.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
-        controller.view.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
-        controller.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
+        view.insertSubview(controller.view, belowSubview: tabBarView)
+        controller.view.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        controller.view.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        controller.view.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        controller.view.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
         currentController = controller
-        controller.view.setNeedsLayout()
-        controller.view.layoutIfNeeded()
+        view.setNeedsLayout()
+        view.layoutIfNeeded()
     }
 
     func hideTabBar(animated: Bool) {
