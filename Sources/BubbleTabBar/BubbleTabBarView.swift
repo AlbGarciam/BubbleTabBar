@@ -130,14 +130,25 @@ private extension BubbleTabBarView {
             self.backgroundView.frame = destinationFrame
         }, completion: nil)
     }
+
+    func switchTab(to newTab: BubbleTabBarItemView, from oldTab: BubbleTabBarItemView?) {
+        let options: UIView.AnimationOptions = [.curveEaseInOut, .layoutSubviews]
+        UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
+            newTab.expand()
+            oldTab?.collapse()
+            self.moveBackground(to: newTab)
+        }, completion: { _ in
+            self.layoutIfNeeded()
+        })
+    }
 }
 
 extension BubbleTabBarView: BubbleTabBarItemViewDelegate {
     func didTap(on itemView: BubbleTabBarItemView) {
         if itemView.isCollapsed {
-            tabsStackView.subviews.compactMap { $0 as? BubbleTabBarItemView }
-                .forEach { $0 == itemView ? $0.expand() : $0.collapse() }
-            moveBackground(to: itemView)
+            let tabs = tabsStackView.subviews.compactMap { $0 as? BubbleTabBarItemView }
+            let currentTab = tabs.first { !$0.isCollapsed }
+            switchTab(to: itemView, from: currentTab)
             if let index = tabsStackView.subviews.firstIndex(of: itemView) {
                 delegate?.tabBarView(self, didSwitchTo: index)
             }
