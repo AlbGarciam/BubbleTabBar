@@ -12,6 +12,7 @@ open class BubbleTabBarViewController: UIViewController {
     private lazy var containerView = UIView()
     private var viewControllers: [Controller] = []
     private weak var currentController: Controller?
+    private var bottomConstraint: NSLayoutConstraint?
     public var tabBarFont: UIFont {
         set { tabBarView.font = newValue }
         get { tabBarView.font }
@@ -58,6 +59,7 @@ open class BubbleTabBarViewController: UIViewController {
             self.addChild($0)
             $0.didMove(toParent: self)
         }
+        controllers.compactMap { $0 as? UINavigationController }.forEach { $0.delegate = self }
         if let firstController = viewControllers.first {
             setCurrentController(firstController)
         }
@@ -74,8 +76,9 @@ private extension BubbleTabBarViewController {
     func configureTabBarView() {
         tabBarView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tabBarView)
-        tabBarView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
-                                           constant: Constants.verticalPadding).isActive = true
+        bottomConstraint = tabBarView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                                                              constant: Constants.verticalPadding)
+        bottomConstraint?.isActive = true
         tabBarView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         tabBarView.widthAnchor.constraint(lessThanOrEqualToConstant: Constants.tabBarMaxWidth).isActive = true
         let leading = tabBarView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor,
@@ -111,6 +114,36 @@ private extension BubbleTabBarViewController {
         controller.view.trailingAnchor.constraint(equalTo: containerView.trailingAnchor).isActive = true
         controller.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
         currentController = controller
+        controller.view.setNeedsLayout()
+        controller.view.layoutIfNeeded()
+    }
+
+    func hideTabBar(animated: Bool) {
+        tabBarView.layoutIfNeeded()
+        let destinationFrame = tabBarView.convert(tabBarView.bounds, to: view)
+        self?.bottomConstraint?.constant = view.bounds.height - destinationFrame.minY
+        let animations = { [weak self] in
+            self?.view.layoutIfNeeded()
+        }
+        if animated {
+            UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: animations, completion: nil)
+        } else {
+            animations()
+        }
+    }
+
+    func showTabBar(animated: Bool) {
+        tabBarView.layoutIfNeeded()
+        let destinationFrame = tabBarView.convert(tabBarView.bounds, to: view)
+        self?.bottomConstraint?.constant = Constants.verticalPadding
+        let animations = { [weak self] in
+            self?.view.layoutIfNeeded()
+        }
+        if animated {
+            UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: animations, completion: nil)
+        } else {
+            animations()
+        }
     }
 }
 
@@ -124,6 +157,15 @@ extension BubbleTabBarViewController: BubbleTabBarViewDelegate {
 
     func didRepeatTap(_ tabBar: BubbleTabBarView) {
         (currentController as? UINavigationController)?.popToRootViewController(animated: true)
+    }
+}
+
+extension BubbleTabBarViewController: UINavigationControllerDelegate {
+    public func navigationController(_ navigationController: UINavigationController,
+                                     willShow viewController: UIViewController,
+                                     animated: Bool) {
+        let shouldDisplayTabBar = viewController.hidesBottomBarWhenPushed
+        shouldDisplayTabBar ? showTabBar(animated: animated) : hideTabBar(animated: animated)
     }
 }
 
