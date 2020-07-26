@@ -95,9 +95,13 @@ private extension BubbleTabBarView {
         tabsStackView.spacing = 10
         addSubview(tabsStackView)
         tabsStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalPadding).isActive = true
-        tabsStackView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         tabsStackView.topAnchor.constraint(equalTo: topAnchor, constant: Constants.verticalPadding).isActive = true
-        tabsStackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
+        let centerX = tabsStackView.centerXAnchor.constraint(equalTo: centerXAnchor)
+        centerX.priority = .defaultHigh
+        centerX.isActive = true
+        let centerY = tabsStackView.centerYAnchor.constraint(equalTo: centerYAnchor)
+        centerY.priority = .defaultHigh
+        centerY.isActive = true
     }
 
     func configureBackground() {
@@ -120,7 +124,7 @@ private extension BubbleTabBarView {
 
     func moveBackground(to subview: UIView) {
         subview.layoutIfNeeded()
-        let destinationFrame = convert(subview.frame, to: self)
+        let destinationFrame = subview.convert(subview.frame, to: self)
         let options: UIView.AnimationOptions = [.curveEaseInOut, .beginFromCurrentState]
         UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
             self.backgroundView.frame = destinationFrame

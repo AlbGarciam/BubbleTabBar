@@ -96,7 +96,6 @@ private extension BubbleTabBarItemView {
     private func configureStackView() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
-        stackView.distribution = .fillProportionally
         stackView.setContentHuggingPriority(.required, for: .horizontal)
         stackView.setContentCompressionResistancePriority(.required, for: .vertical)
         stackView.spacing = Constants.spacing
