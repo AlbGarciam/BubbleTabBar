@@ -152,10 +152,17 @@ extension BubbleTabBarViewController: BubbleTabBarViewDelegate {
 
 extension BubbleTabBarViewController: UINavigationControllerDelegate {
     public func navigationController(_ navigationController: UINavigationController,
-                                     didShow viewController: UIViewController,
+                                     willShow viewController: UIViewController,
                                      animated: Bool) {
-        let shouldDisplayTabBar = viewController.hidesBottomBarWhenPushed
-        !shouldDisplayTabBar ? showTabBar(animated: animated) : hideTabBar(animated: animated)
+        if let coordinator = navigationController.topViewController?.transitionCoordinator {
+            coordinator.notifyWhenInteractionEndsUsingBlock({ (context) in
+                guard !context.isCancelled else {
+                    return
+                }
+                let shouldDisplayTabBar = viewController.hidesBottomBarWhenPushed
+                !shouldDisplayTabBar ? showTabBar(animated: animated) : hideTabBar(animated: animated)
+            })
+        }
     }
 }
 
