@@ -128,6 +128,7 @@ private extension BubbleTabBarView {
         configureTabsStackView()
         configureBackground()
         configureBackgroundView()
+        layoutIfNeeded()
     }
 
     func configureTabsStackView() {
