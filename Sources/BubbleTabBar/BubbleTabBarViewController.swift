@@ -12,6 +12,7 @@ open class BubbleTabBarViewController: UIViewController {
     private var viewControllers: [Controller] = []
     private weak var currentController: Controller?
     private var bottomConstraint: NSLayoutConstraint?
+    private weak var topController: UIViewController?
     public var tabBarFont: UIFont {
         set { tabBarView.font = newValue }
         get { tabBarView.font }
@@ -62,6 +63,29 @@ open class BubbleTabBarViewController: UIViewController {
         if let firstController = viewControllers.first {
             setCurrentController(firstController)
         }
+    }
+
+    public func setTopChild(_ controller: UIViewController) {
+        topController = controller
+        topController?.willMove(toParent: self)
+        addChild(controller)
+        setTopView(controller.view)
+        topController?.didMove(toParent: self)
+    }
+
+    public func setTopView(_ view: UIView) {
+        tabBarView.addTopView(view: view)
+    }
+
+    public func removeTopChild() {
+        topController?.willMove(toParent: nil)
+        topController?.removeFromParent()
+        removeTopView()
+        topController?.didMove(toParent: nil)
+    }
+
+    public func removeTopView() {
+        tabBarView.removeTopView()
     }
 }
 

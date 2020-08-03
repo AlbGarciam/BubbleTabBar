@@ -6,7 +6,8 @@ protocol BubbleTabBarViewDelegate: AnyObject {
 }
 
 final class BubbleTabBarView: UIView {
-    private let tabsStackView = UIStackView()
+    private lazy var mainStackView = UIStackView(arrangedSubviews: [tabsStackView])
+    private lazy var tabsStackView = UIStackView()
     private let cardView = UIView()
     private let backgroundView = UIView()
     weak var delegate: BubbleTabBarViewDelegate?
@@ -76,7 +77,7 @@ final class BubbleTabBarView: UIView {
     override func didMoveToSuperview() {
         super.didMoveToSuperview()
         let tabs = tabsStackView.subviews
-        if let selected = tabs.compactMap { $0 as? BubbleTabBarItemView }.first(where: { !$0.isCollapsed }) {
+        if let selected = tabs.compactMap({ $0 as? BubbleTabBarItemView }).first(where: { !$0.isCollapsed }) {
             moveBackground(to: selected)
         }
     }
@@ -84,14 +85,46 @@ final class BubbleTabBarView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         let tabs = tabsStackView.subviews
-        if let selected = tabs.compactMap { $0 as? BubbleTabBarItemView }.first(where: { !$0.isCollapsed }) {
+        if let selected = tabs.compactMap({ $0 as? BubbleTabBarItemView }).first(where: { !$0.isCollapsed }) {
             moveBackground(to: selected)
+        }
+    }
+
+    func addTopView(view: UIView) {
+        removeTopView { [weak self] in
+            view.isHidden = true
+            view.alpha = 0
+            self?.mainStackView.insertArrangedSubview(view, at: 0)
+            self?.mainStackView.layoutIfNeeded()
+            UIView.animate(withDuration: 0.2) {
+                view.alpha = 1
+                view.isHidden = false
+                self?.mainStackView.layoutIfNeeded()
+            }
+        }
+        mainStackView.insertArrangedSubview(view, at: 0)
+    }
+
+    func removeTopView(completion: (() -> Void)? = nil) {
+        guard mainStackView.arrangedSubviews.count > 1,
+            let subview = mainStackView.arrangedSubviews.first else {
+                completion?()
+                return
+        }
+        UIView.animate(withDuration: 0.2, animations: { [weak self] in
+            subview.alpha = 0
+            subview.isHidden = true
+            self?.mainStackView.layoutIfNeeded()
+        }) { _ in
+            subview.removeFromSuperview()
+            completion?()
         }
     }
 }
 
 private extension BubbleTabBarView {
     func configure() {
+        configureMainStackView()
         configureTabsStackView()
         configureBackground()
         configureBackgroundView()
@@ -102,13 +135,19 @@ private extension BubbleTabBarView {
         tabsStackView.axis = .horizontal
         tabsStackView.distribution = .equalSpacing
         tabsStackView.spacing = 10
-        addSubview(tabsStackView)
-        tabsStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalPadding).isActive = true
-        tabsStackView.topAnchor.constraint(equalTo: topAnchor, constant: Constants.verticalPadding).isActive = true
-        let centerX = tabsStackView.centerXAnchor.constraint(equalTo: centerXAnchor)
+    }
+
+    func configureMainStackView() {
+        mainStackView.translatesAutoresizingMaskIntoConstraints = false
+        mainStackView.axis = .vertical
+        mainStackView.spacing = 10
+        addSubview(mainStackView)
+        mainStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalPadding).isActive = true
+        mainStackView.topAnchor.constraint(equalTo: topAnchor, constant: Constants.verticalPadding).isActive = true
+        let centerX = mainStackView.centerXAnchor.constraint(equalTo: centerXAnchor)
         centerX.priority = .defaultHigh
         centerX.isActive = true
-        let centerY = tabsStackView.centerYAnchor.constraint(equalTo: centerYAnchor)
+        let centerY = mainStackView.centerYAnchor.constraint(equalTo: centerYAnchor)
         centerY.priority = .defaultHigh
         centerY.isActive = true
     }
