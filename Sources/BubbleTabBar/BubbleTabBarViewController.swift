@@ -170,7 +170,8 @@ private extension BubbleTabBarViewController {
         }
         let intersection = scrollView.convert(tabBarView.frame, from: tabBarView)
         var edgeInsets = scrollView.contentInset
-        edgeInsets.bottom = intersection.height
+        edgeInsets.bottom = intersection.height + Constants.bottomPadding
+        scrollView.contentInset = edgeInsets
     }
 }
 
@@ -218,5 +219,6 @@ private extension BubbleTabBarViewController {
         static let tabBarMaxWidth: CGFloat = 414
         static let horizontalPadding: CGFloat = 8
         static let verticalPadding: CGFloat = -8
+        static let bottomPadding: CGFloat = 16
     }
 }
