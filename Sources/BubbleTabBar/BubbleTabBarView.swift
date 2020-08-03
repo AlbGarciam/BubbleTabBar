@@ -3,6 +3,8 @@ import UIKit
 protocol BubbleTabBarViewDelegate: AnyObject {
     func tabBarView(_ tabBar: BubbleTabBarView, didSwitchTo position: Int)
     func didRepeatTap(_ tabBar: BubbleTabBarView)
+    func didExpand()
+    func didCollapse()
 }
 
 final class BubbleTabBarView: UIView {
@@ -96,13 +98,14 @@ final class BubbleTabBarView: UIView {
             view.alpha = 0
             self?.mainStackView.insertArrangedSubview(view, at: 0)
             self?.mainStackView.layoutIfNeeded()
-            UIView.animate(withDuration: 0.2) {
+            UIView.animate(withDuration: 0.2, animations: {
                 view.alpha = 1
                 view.isHidden = false
                 self?.mainStackView.layoutIfNeeded()
+            }) { _ in
+                self?.delegate?.didExpand()
             }
         }
-        mainStackView.insertArrangedSubview(view, at: 0)
     }
 
     func removeTopView(completion: (() -> Void)? = nil) {
@@ -115,8 +118,9 @@ final class BubbleTabBarView: UIView {
             subview.alpha = 0
             subview.isHidden = true
             self?.mainStackView.layoutIfNeeded()
-        }) { _ in
+        }) { [weak self] _ in
             subview.removeFromSuperview()
+            self?.delegate?.didCollapse()
             completion?()
         }
     }

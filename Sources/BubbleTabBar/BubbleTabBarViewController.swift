@@ -129,6 +129,7 @@ private extension BubbleTabBarViewController {
         currentController = controller
         view.setNeedsLayout()
         view.layoutIfNeeded()
+        updateContentArea(of: controller.view)
     }
 
     func hideTabBar(animated: Bool) {
@@ -159,6 +160,18 @@ private extension BubbleTabBarViewController {
             animations()
         }
     }
+
+    func updateContentArea(of view: UIView) {
+        guard view.frame.intersects(view.convert(tabBarView.frame, from: tabBarView)) else {
+            return
+        }
+        guard let scrollView = view as? UIScrollView else {
+            return view.subviews.forEach { self.updateContentArea(of: $0) }
+        }
+        let intersection = scrollView.convert(tabBarView.frame, from: tabBarView)
+        var edgeInsets = scrollView.contentInset
+        edgeInsets.bottom = intersection.height
+    }
 }
 
 extension BubbleTabBarViewController: BubbleTabBarViewDelegate {
@@ -171,6 +184,16 @@ extension BubbleTabBarViewController: BubbleTabBarViewDelegate {
 
     func didRepeatTap(_ tabBar: BubbleTabBarView) {
         (currentController as? UINavigationController)?.popToRootViewController(animated: true)
+    }
+
+    func didCollapse() {
+        guard let controller = currentController else { return }
+        updateContentArea(of: controller.view)
+    }
+
+    func didExpand() {
+        guard let controller = currentController else { return }
+        updateContentArea(of: controller.view)
     }
 }
 
