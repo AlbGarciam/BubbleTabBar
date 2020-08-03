@@ -171,7 +171,7 @@ private extension BubbleTabBarViewController {
         }
         let intersection = tabBarFrame.intersection(subviewFrame)
         var edgeInsets = scrollView.contentInset
-        edgeInsets.bottom = frameInParent.height + Constants.bottomPadding
+        edgeInsets.bottom = intersection.height + Constants.bottomPadding
         scrollView.contentInset = edgeInsets
     }
 }
