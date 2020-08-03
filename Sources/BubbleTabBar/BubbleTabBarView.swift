@@ -175,7 +175,7 @@ private extension BubbleTabBarView {
         subview.layoutIfNeeded()
         var destinationFrame = subview.convert(subview.bounds, to: self)
         let maxXPosition = max(Constants.horizontalPadding, destinationFrame.minX)
-        let minYPosition = min(Constants.verticalPadding, destinationFrame.minY)
+        let minYPosition = max(min(Constants.verticalPadding, destinationFrame.minY), Constants.verticalPadding)
         destinationFrame.origin = CGPoint(x: maxXPosition, y: minYPosition)
         let options: UIView.AnimationOptions = [.curveEaseInOut, .layoutSubviews]
         UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
