@@ -162,15 +162,14 @@ private extension BubbleTabBarViewController {
     }
 
     func updateContentArea(of view: UIView) {
-        guard view.frame.intersects(view.convert(view.frame, from: tabBarView)) else {
-            return
-        }
+        let frameInParent = tabBarView.convert(view.frame, from: view.superview)
+        let overlapping = frameInParent.intersects(view.frame)
+        guard overlapping else { return }
         guard let scrollView = view as? UIScrollView else {
             return view.subviews.forEach { self.updateContentArea(of: $0) }
         }
-        let intersection = scrollView.convert(view.frame, from: tabBarView)
         var edgeInsets = scrollView.contentInset
-        edgeInsets.bottom = intersection.height + Constants.bottomPadding
+        edgeInsets.bottom = frameInParent.height + Constants.bottomPadding
         scrollView.contentInset = edgeInsets
     }
 }
