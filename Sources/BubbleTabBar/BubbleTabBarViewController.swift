@@ -43,6 +43,12 @@ open class BubbleTabBarViewController: UIViewController {
         configure()
     }
 
+    open override func systemLayoutFittingSizeDidChange(forChildContentContainer container: UIContentContainer) {
+        super.systemLayoutFittingSizeDidChange(forChildContentContainer: container)
+        guard let currentController = currentController else { return }
+        updateContentArea(of: currentController.view)
+    }
+
     deinit {
         removeControllers()
     }
