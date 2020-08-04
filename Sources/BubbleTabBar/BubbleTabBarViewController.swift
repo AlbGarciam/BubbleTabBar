@@ -43,12 +43,6 @@ open class BubbleTabBarViewController: UIViewController {
         configure()
     }
 
-    open override func systemLayoutFittingSizeDidChange(forChildContentContainer container: UIContentContainer) {
-        super.systemLayoutFittingSizeDidChange(forChildContentContainer: container)
-        guard let currentController = currentController else { return }
-        updateContentArea(of: currentController.view)
-    }
-
     deinit {
         removeControllers()
     }
@@ -217,6 +211,13 @@ extension BubbleTabBarViewController: UINavigationControllerDelegate {
             guard context.isCancelled else { return }
             barWasHidden ? self?.hideTabBar(animated: animated) : self?.showTabBar(animated: animated)
         }
+    }
+
+    public func navigationController(_ navigationController: UINavigationController,
+                                     didShow viewController: UIViewController,
+                                     animated: Bool) {
+        guard navigationController == currentController else { return }
+        updateContentArea(of: viewController.view)
     }
 }
 
