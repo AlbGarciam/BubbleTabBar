@@ -59,7 +59,6 @@ open class BubbleTabBarViewController: UIViewController {
             self.addChild($0)
             $0.didMove(toParent: self)
         }
-        controllers.compactMap { $0 as? UINavigationController }.forEach { $0.delegate = self }
         if let firstController = viewControllers.first {
             setCurrentController(firstController)
         }
@@ -130,6 +129,7 @@ private extension BubbleTabBarViewController {
         view.setNeedsLayout()
         view.layoutIfNeeded()
         updateContentArea(of: controller.view)
+        (currentController as? UINavigationController)?.delegate = self
     }
 
     func hideTabBar(animated: Bool) {
