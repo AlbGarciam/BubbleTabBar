@@ -172,7 +172,7 @@ private extension BubbleTabBarView {
         backgroundView.backgroundColor = backgroundViewColor
         backgroundView.layer.masksToBounds = true
         backgroundView.layer.cornerRadius = Constants.backgroundViewCornerRadius
-        insertSubview(backgroundView, belowSubview: tabsStackView)
+        insertSubview(backgroundView, belowSubview: mainStackView)
     }
 
     func moveBackground(to subview: UIView) {
