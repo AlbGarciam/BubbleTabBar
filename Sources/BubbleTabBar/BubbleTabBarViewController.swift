@@ -197,7 +197,7 @@ private extension BubbleTabBarViewController {
         self.blurView = blurView
         let animator = UIViewPropertyAnimator(duration: 0.2, curve: .easeInOut)
         animator.addAnimations {
-            blurView.effect = UIBlurEffect(style: .systemThinMaterial)
+            blurView.effect = UIBlurEffect(style: .extraLight)
         }
         animator.fractionComplete = 0.1
     }
