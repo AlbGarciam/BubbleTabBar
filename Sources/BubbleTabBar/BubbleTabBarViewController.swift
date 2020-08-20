@@ -187,7 +187,7 @@ private extension BubbleTabBarViewController {
 
 
     func disableTouches() {
-        let blurView = UIVisualEffectView(effect: nil)
+        let blurView = UIVisualEffectView(frame: view.bounds)
         blurView.translatesAutoresizingMaskIntoConstraints = false
         view.insertSubview(blurView, belowSubview: tabBarView)
         blurView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
@@ -195,13 +195,9 @@ private extension BubbleTabBarViewController {
         blurView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         blurView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         self.blurView = blurView
-        let animator = UIViewPropertyAnimator(duration: 0.2, curve: .easeInOut)
-        animator.addAnimations {
-            blurView.effect = UIBlurEffect(style: .extraLight)
+        UIView.animate(withDuration:0.2) {
+            blurView.effect = UIBlurEffect(style: .light)
         }
-        animator.fractionComplete = 0.1
-        animator.stopAnimation(true)
-        animator.finishAnimation(at: .current)
     }
 
     func enableTouches() {
