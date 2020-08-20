@@ -13,6 +13,8 @@ open class BubbleTabBarViewController: UIViewController {
     private weak var currentController: Controller?
     private var bottomConstraint: NSLayoutConstraint?
     private weak var topController: UIViewController?
+    private weak var blurView: UIVisualEffectView?
+
     public var tabBarFont: UIFont {
         set { tabBarView.font = newValue }
         get { tabBarView.font }
@@ -85,6 +87,23 @@ open class BubbleTabBarViewController: UIViewController {
 
     public func removeTopView() {
         tabBarView.removeTopView()
+    }
+
+    public func disableTouches() {
+        guard blurView == nil else { return }
+        let effect = UIBlurEffect(style: UIBlurEffect.Style.extraLight)
+        let blurView = UIVisualEffectView(effect: effect)
+        blurView.translatesAutoresizingMaskIntoConstraints = false
+        view.insertSubview(blurView, belowSubview: tabBarView)
+        blurView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        blurView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
+        blurView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        blurView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        self.blurView = blurView
+    }
+
+    public func enableTouches() {
+        blurView?.removeFromSuperview()
     }
 }
 
