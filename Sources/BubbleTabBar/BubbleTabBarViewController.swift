@@ -196,7 +196,7 @@ private extension BubbleTabBarViewController {
         blurView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         self.blurView = blurView
         UIView.animate(withDuration:0.2) {
-            blurView.effect = UIBlurEffect(style: .light)
+            blurView.effect = UIBlurEffect(style: .extraLight)
         }
     }
 
