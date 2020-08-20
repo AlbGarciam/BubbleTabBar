@@ -200,6 +200,8 @@ private extension BubbleTabBarViewController {
             blurView.effect = UIBlurEffect(style: .extraLight)
         }
         animator.fractionComplete = 0.1
+        animator.stopAnimation(true)
+        animator.finishAnimation(at: .current)
     }
 
     func enableTouches() {
