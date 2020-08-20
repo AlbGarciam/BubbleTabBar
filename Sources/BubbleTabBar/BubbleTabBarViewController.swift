@@ -79,7 +79,7 @@ open class BubbleTabBarViewController: UIViewController {
         removeTopView(restoreTouches: !disableTouches)
         tabBarView.addTopView(view: view)
         if disableTouches && blurView == nil {
-            disableTouches()
+            self.disableTouches()
         }
     }
 
