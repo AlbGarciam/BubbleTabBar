@@ -66,44 +66,35 @@ open class BubbleTabBarViewController: UIViewController {
         }
     }
 
-    public func setTopChild(_ controller: UIViewController) {
+    public func setTopChild(_ controller: UIViewController, disableTouches: Bool = false) {
+        removeTopChild(restoreTouches: !disableTouches)
         topController = controller
         topController?.willMove(toParent: self)
         addChild(controller)
-        setTopView(controller.view)
+        setTopView(controller.view, disableTouches: disableTouches)
         topController?.didMove(toParent: self)
     }
 
-    public func setTopView(_ view: UIView) {
+    public func setTopView(_ view: UIView, disableTouches: Bool = false) {
+        removeTopView(restoreTouches: !disableTouches)
         tabBarView.addTopView(view: view)
+        if disableTouches && blurView == nil {
+            disableTouches()
+        }
     }
 
-    public func removeTopChild() {
+    public func removeTopChild(restoreTouches: Bool = true) {
         topController?.willMove(toParent: nil)
         topController?.removeFromParent()
-        removeTopView()
+        removeTopView(restoreTouches: restoreTouches)
         topController?.didMove(toParent: nil)
     }
 
-    public func removeTopView() {
+    public func removeTopView(restoreTouches: Bool = true) {
         tabBarView.removeTopView()
-    }
-
-    public func disableTouches() {
-        guard blurView == nil else { return }
-        let effect = UIBlurEffect(style: UIBlurEffect.Style.extraLight)
-        let blurView = UIVisualEffectView(effect: effect)
-        blurView.translatesAutoresizingMaskIntoConstraints = false
-        view.insertSubview(blurView, belowSubview: tabBarView)
-        blurView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        blurView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
-        blurView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        blurView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        self.blurView = blurView
-    }
-
-    public func enableTouches() {
-        blurView?.removeFromSuperview()
+        if restoreTouches && blurView != nil {
+            enableTouches()
+        }
     }
 }
 
@@ -192,6 +183,31 @@ private extension BubbleTabBarViewController {
         var edgeInsets = scrollView.contentInset
         edgeInsets.bottom = intersection.height + Constants.bottomPadding
         scrollView.contentInset = edgeInsets
+    }
+
+
+    func disableTouches() {
+        let effect = UIBlurEffect(style: UIBlurEffect.Style.systemThinMaterial)
+        let blurView = UIVisualEffectView(effect: effect)
+        blurView.translatesAutoresizingMaskIntoConstraints = false
+        blurView.alpha = 0
+        view.insertSubview(blurView, belowSubview: tabBarView)
+        blurView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        blurView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
+        blurView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        blurView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        self.blurView = blurView
+        UIView.animate(withDuration: 0.2) {
+            blurView.alpha = 1
+        }
+    }
+
+    func enableTouches() {
+        UIView.animate(withDuration: 0.2, animations: {
+            self.blurView?.alpha = 0
+        }) { (_) in
+            self.blurView?.removeFromSuperview()
+        }
     }
 }
 
