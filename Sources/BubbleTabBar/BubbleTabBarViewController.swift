@@ -13,7 +13,7 @@ open class BubbleTabBarViewController: UIViewController {
     private weak var currentController: Controller?
     private var bottomConstraint: NSLayoutConstraint?
     private weak var topController: UIViewController?
-    private weak var blurView: UIVisualEffectView?
+    private weak var blurView: UIView?
 
     public var tabBarFont: UIFont {
         set { tabBarView.font = newValue }
@@ -38,6 +38,12 @@ open class BubbleTabBarViewController: UIViewController {
     public var tabBarShadowColor: CGColor? {
         get { tabBarView.layer.shadowColor }
         set { tabBarView.layer.applyShadow(color: newValue) }
+    }
+
+    public var blurColor: UIColor? {
+        didSet {
+            blurView?.backgroundColor = blurColor
+        }
     }
 
     open override func viewDidLoad() {
@@ -130,7 +136,7 @@ private extension BubbleTabBarViewController {
     func setCurrentController(_ controller: Controller) {
         currentController?.view.removeFromSuperview()
         controller.view.translatesAutoresizingMaskIntoConstraints = false
-        view.insertSubview(controller.view, belowSubview: tabBarView)
+        view.insertSubview(controller.view, belowSubview: blurView ?? tabBarView)
         controller.view.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         controller.view.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         controller.view.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
@@ -187,24 +193,23 @@ private extension BubbleTabBarViewController {
 
 
     func disableTouches() {
-        let blurView = UIVisualEffectView(frame: view.bounds)
+        let blurView = UIView(frame: view.bounds)
         blurView.translatesAutoresizingMaskIntoConstraints = false
+        blurView.alpha = 0
         view.insertSubview(blurView, belowSubview: tabBarView)
         blurView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         blurView.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
         blurView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         blurView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         self.blurView = blurView
-        blurView.alpha = 0
         UIView.animate(withDuration:0.2) {
-            blurView.effect = UIBlurEffect(style: .systemUltraThinMaterial)
-            blurView.alpha = 0.75
+            blurView.alpha = 1
         }
     }
 
     func enableTouches() {
         UIView.animate(withDuration: 0.2, animations: {
-            self.blurView?.effect = nil
+            self.blurView?.alpha = 0
         }) { (_) in
             self.blurView?.removeFromSuperview()
         }
