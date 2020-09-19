@@ -118,6 +118,8 @@ private extension BubbleTabBarViewController {
         bottomConstraint?.isActive = true
         tabBarView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         tabBarView.widthAnchor.constraint(lessThanOrEqualToConstant: Constants.tabBarMaxWidth).isActive = true
+        tabBarView.trailingAnchor.constraint(lessThanOrEqualTo: view.safeAreaLayoutGuide.trailingAnchor,
+                                             constant: -Constants.horizontalPadding).isActive = true
         let leading = tabBarView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor,
                                                           constant: Constants.horizontalPadding)
         leading.priority = .defaultHigh
