@@ -148,6 +148,7 @@ private extension BubbleTabBarView {
         mainStackView.spacing = 10
         addSubview(mainStackView)
         mainStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalPadding).isActive = true
+        mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constants.horizontalPadding).isActive = true
         mainStackView.topAnchor.constraint(equalTo: topAnchor, constant: Constants.verticalPadding).isActive = true
         let centerX = mainStackView.centerXAnchor.constraint(equalTo: centerXAnchor)
         centerX.priority = .defaultHigh
