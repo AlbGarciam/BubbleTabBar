@@ -102,6 +102,10 @@ open class BubbleTabBarViewController: UIViewController {
             enableTouches()
         }
     }
+
+    public func setCurrentController(at position: Int) {
+        tabBarView.selectItem(at: position)
+    }
 }
 
 //MARK: - Private methods
