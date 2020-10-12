@@ -127,7 +127,7 @@ final class BubbleTabBarView: UIView {
 
     func selectItem(at position: Int) {
         guard position >= 0 && position < tabsStackView.subviews.count else { return }
-        didTap(on: tabsStackView.subviews[position])
+        didTap(on: tabsStackView.subviews[position] as! BubbleTabBarItemView)
     }
 }
 
