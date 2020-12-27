@@ -184,7 +184,7 @@ private extension BubbleTabBarViewController {
     }
 
     func updateContentArea(of view: UIView) {
-        let tabBarFrame = tabBarView.convert(tabBarView.frame, from: self.view)
+        let tabBarFrame = tabBarView.frame
         let subviewFrame = view.convert(view.frame, from: self.view)
         let overlapping = tabBarFrame.intersects(subviewFrame)
         guard overlapping else { return }
