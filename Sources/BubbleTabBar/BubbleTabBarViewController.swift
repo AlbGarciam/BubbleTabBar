@@ -87,6 +87,9 @@ open class BubbleTabBarViewController: UIViewController {
         if disableTouches && blurView == nil {
             self.disableTouches()
         }
+        if let currentView = currentController?.view {
+            updateContentArea(of: currentView)
+        }
     }
 
     public func removeTopChild(restoreTouches: Bool = true) {
@@ -100,6 +103,9 @@ open class BubbleTabBarViewController: UIViewController {
         tabBarView.removeTopView()
         if restoreTouches && blurView != nil {
             enableTouches()
+        }
+        if let currentView = currentController?.view {
+            updateContentArea(of: currentView)
         }
     }
 
@@ -148,10 +154,10 @@ private extension BubbleTabBarViewController {
         controller.view.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         controller.view.heightAnchor.constraint(equalTo: view.heightAnchor).isActive = true
         currentController = controller
+        (currentController as? UINavigationController)?.delegate = self
         view.setNeedsLayout()
         view.layoutIfNeeded()
         updateContentArea(of: controller.view)
-        (currentController as? UINavigationController)?.delegate = self
     }
 
     func hideTabBar(animated: Bool) {
@@ -185,7 +191,7 @@ private extension BubbleTabBarViewController {
 
     func updateContentArea(of view: UIView) {
         let tabBarFrame = tabBarView.frame
-        let subviewFrame = view.convert(view.frame, from: self.view)
+        let subviewFrame = view.frame
         let overlapping = tabBarFrame.intersects(subviewFrame)
         guard overlapping else { return }
         guard let scrollView = view as? UIScrollView else {
