@@ -11,9 +11,10 @@ open class BubbleTabBarViewController: UIViewController {
     private var viewControllers: [UIViewController] = []
     private weak var currentController: UIViewController?
     private var bottomConstraint: NSLayoutConstraint?
-    private weak var topController: UIViewController?
     private weak var blurView: UIView?
 
+    public weak var topController: UIViewController?
+    
     public var tabBarFont: UIFont {
         set { tabBarView.font = newValue }
         get { tabBarView.font }
