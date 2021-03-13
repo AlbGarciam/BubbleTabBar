@@ -7,10 +7,9 @@ public protocol BubbleViewController {
 }
 
 open class BubbleTabBarViewController: UIViewController {
-    fileprivate typealias Controller = BubbleViewController & UIViewController
     private lazy var tabBarView = BubbleTabBarView()
-    private var viewControllers: [Controller] = []
-    private weak var currentController: Controller?
+    private var viewControllers: [UIViewController] = []
+    private weak var currentController: UIViewController?
     private var bottomConstraint: NSLayoutConstraint?
     private weak var topController: UIViewController?
     private weak var blurView: UIView?
@@ -55,11 +54,15 @@ open class BubbleTabBarViewController: UIViewController {
         removeControllers()
     }
 
-    public func setViewControllers(_ controllers: [BubbleViewController & UIViewController]) {
+    public func setViewControllers(_ controllers: [UIViewController]) {
         removeControllers()
         viewControllers = controllers
-        let tabBarItems = controllers.map {
-            BubbleTabBarItem(expandedIcon: $0.expandedIcon, collapsedIcon: $0.collapsedIcon, title: $0.tabBarTitle)
+        let tabBarItems: [BubbleTabBarItem] = controllers.map {
+            let bubbleController = ($0 as? BubbleViewController) ??
+                ($0.navigationController?.viewControllers.first as? BubbleViewController)
+            return BubbleTabBarItem(expandedIcon: bubbleController?.expandedIcon ?? UIImage(),
+                                    collapsedIcon: bubbleController?.collapsedIcon ?? UIImage(),
+                                    title: bubbleController?.tabBarTitle ?? "")
         }
         tabBarView.setItems(tabBarItems)
         controllers.forEach {
@@ -145,7 +148,7 @@ private extension BubbleTabBarViewController {
         viewControllers.removeAll()
     }
 
-    func setCurrentController(_ controller: Controller) {
+    func setCurrentController(_ controller: UIViewController) {
         currentController?.view.removeFromSuperview()
         controller.view.translatesAutoresizingMaskIntoConstraints = false
         view.insertSubview(controller.view, belowSubview: blurView ?? tabBarView)
