@@ -60,7 +60,7 @@ open class BubbleTabBarViewController: UIViewController {
         viewControllers = controllers
         let tabBarItems: [BubbleTabBarItem] = controllers.map {
             let bubbleController = ($0 as? BubbleViewController) ??
-                ($0.navigationController?.viewControllers.first as? BubbleViewController)
+                (($0 as? UINavigationController)?.viewControllers.first as? BubbleViewController)
             return BubbleTabBarItem(expandedIcon: bubbleController?.expandedIcon ?? UIImage(),
                                     collapsedIcon: bubbleController?.collapsedIcon ?? UIImage(),
                                     title: bubbleController?.tabBarTitle ?? "")
