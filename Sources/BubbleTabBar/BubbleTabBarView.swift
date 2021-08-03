@@ -143,7 +143,7 @@ private extension BubbleTabBarView {
     func configureTabsStackView() {
         tabsStackView.translatesAutoresizingMaskIntoConstraints = false
         tabsStackView.axis = .horizontal
-        tabsStackView.distribution = .equalSpacing
+        tabsStackView.distribution = .fillEqually
         tabsStackView.spacing = 10
     }
 

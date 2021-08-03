@@ -68,12 +68,14 @@ final class BubbleTabBarItemView: UIView {
         titleLabel.isHidden = true
         titleLabel.alpha = 0
         imageView.image = self.collapsedIcon
+        layoutIfNeeded()
     }
 
     func expand() {
         titleLabel.isHidden = false
         titleLabel.alpha = 1
         imageView.image = self.expandedIcon
+        layoutIfNeeded()
     }
 }
 
@@ -90,12 +92,15 @@ private extension BubbleTabBarItemView {
     private func configureStackView() {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.distribution = .fill
         stackView.setContentHuggingPriority(.required, for: .horizontal)
         stackView.setContentCompressionResistancePriority(.required, for: .vertical)
         stackView.spacing = Constants.spacing
         addSubview(stackView)
         stackView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalPadding).isActive = true
+        stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor,
+                                           constant: Constants.horizontalPadding).isActive = true
         stackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         stackView.topAnchor.constraint(equalTo: topAnchor, constant: Constants.verticalPadding).isActive = true
     }
@@ -108,8 +113,9 @@ private extension BubbleTabBarItemView {
     }
 
     private func configureTitleLabel() {
-        titleLabel.numberOfLines = 1
-        titleLabel.setContentHuggingPriority(.required, for: .horizontal)
+        titleLabel.numberOfLines = 2
+        titleLabel.lineBreakMode = .byWordWrapping
+        titleLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         titleLabel.setContentCompressionResistancePriority(.required, for: .vertical)
         titleLabel.isHidden = true
     }
@@ -122,7 +128,7 @@ private extension BubbleTabBarItemView {
 
 private extension BubbleTabBarItemView {
     struct Constants {
-        static let horizontalPadding: CGFloat = 20
+        static let horizontalPadding: CGFloat = 8
         static let verticalPadding: CGFloat = 10
         static let spacing: CGFloat = 6
         static let imageSize: CGSize = .init(width: 24, height: 24)
