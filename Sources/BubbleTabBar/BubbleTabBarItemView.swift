@@ -10,54 +10,54 @@ struct BubbleTabBarItem {
     }
 }
 
-protocol BubbleTabBarItemViewDelegate: AnyObject {
-    func didTap(on itemView: BubbleTabBarItemView)
-}
-
 final class BubbleTabBarItemView: UIView {
     private lazy var imageView = UIImageView()
     private lazy var titleLabel = UILabel()
-    private lazy var stackView = UIStackView(arrangedSubviews: [imageView, titleLabel])
-    weak var delegate: BubbleTabBarItemViewDelegate?
-    var isCollapsed: Bool { titleLabel.isHidden }
-    private var expandedIcon: UIImage?
-    private var collapsedIcon: UIImage?
+    private lazy var stackView = UIStackView(frame: .zero)
 
-    override var tintColor: UIColor! {
+    var selectedContentColor: UIColor = .white {
         didSet {
-            backgroundColor = .clear
-            imageView.tintColor = tintColor
-            titleLabel.textColor = tintColor
+            isCollapsed ? collapse() : expand()
         }
     }
-
-    convenience init() {
-        self.init(frame: .zero)
+    var unselectedContentColor: UIColor = .black {
+        didSet {
+            isCollapsed ? collapse() : expand()
+        }
     }
+    var selectedBackgroundColor: UIColor = .black {
+        didSet {
+            isCollapsed ? collapse() : expand()
+        }
+    }
+    var isCollapsed: Bool { titleLabel.isHidden }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    private let expandedIcon: UIImage
+    private let collapsedIcon: UIImage
+    private let onTap: (BubbleTabBarItemView) -> Void
+
+    init(item: BubbleTabBarItem, onTap: @escaping (BubbleTabBarItemView) -> Void) {
+        self.collapsedIcon = item.collapsedIcon
+        self.expandedIcon = item.expandedIcon
+        self.onTap = onTap
+        super.init(frame: .zero)
+
+        isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onViewTapped))
+        addGestureRecognizer(tapGesture)
+
         configure()
+        titleLabel.text = item.title
     }
 
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        configure()
+        fatalError("init(coder:) has not been implemented")
     }
 
-    func setExpandedIcon(_ icon: UIImage) {
-        expandedIcon = icon
-        imageView.image = isCollapsed ? collapsedIcon : expandedIcon
-    }
-
-    func setCollapsedIcon(_ icon: UIImage) {
-        collapsedIcon = icon
-        imageView.image = isCollapsed ? collapsedIcon : expandedIcon
-    }
-
-    func setTitle(_ title: String) {
-        titleLabel.text = title
-        titleLabel.accessibilityLabel = title
+    @objc
+    private func onViewTapped() {
+        onTap(self)
     }
 
     func setTitleFont(_ font: UIFont) {
@@ -67,14 +67,20 @@ final class BubbleTabBarItemView: UIView {
     func collapse() {
         titleLabel.isHidden = true
         titleLabel.alpha = 0
-        imageView.image = self.collapsedIcon
+        imageView.image = collapsedIcon.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = unselectedContentColor
+        titleLabel.textColor = unselectedContentColor
+        backgroundColor = .clear
         layoutIfNeeded()
     }
 
     func expand() {
         titleLabel.isHidden = false
         titleLabel.alpha = 1
-        imageView.image = self.expandedIcon
+        imageView.image = expandedIcon.withRenderingMode(.alwaysTemplate)
+        imageView.tintColor = selectedContentColor
+        titleLabel.textColor = selectedContentColor
+        backgroundColor = selectedBackgroundColor
         layoutIfNeeded()
     }
 }
@@ -84,9 +90,10 @@ private extension BubbleTabBarItemView {
         configureStackView()
         configureImageView()
         configureTitleLabel()
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(onViewTapped))
-        isUserInteractionEnabled = true
-        addGestureRecognizer(tapGesture)
+        translatesAutoresizingMaskIntoConstraints = false
+        heightAnchor.constraint(equalToConstant: 40).isActive = true
+        layer.masksToBounds = true
+        layer.cornerRadius = 14
     }
 
     private func configureStackView() {
@@ -94,43 +101,31 @@ private extension BubbleTabBarItemView {
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.distribution = .fill
-        stackView.setContentHuggingPriority(.required, for: .horizontal)
-        stackView.setContentCompressionResistancePriority(.required, for: .vertical)
-        stackView.spacing = Constants.spacing
+        stackView.spacing = 6
         addSubview(stackView)
-        stackView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
-        stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor,
-                                           constant: Constants.horizontalPadding).isActive = true
-        stackView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-        stackView.topAnchor.constraint(equalTo: topAnchor, constant: Constants.verticalPadding).isActive = true
+        stackView.topAnchor.constraint(equalTo: topAnchor, constant: 2).isActive = true
+        stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -2).isActive = true
+        stackView.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 2).isActive = true
+        stackView.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -2).isActive = true
+        let center = stackView.centerXAnchor.constraint(equalTo: centerXAnchor)
+        center.priority = .defaultLow
+        center.isActive = true
     }
 
     private func configureImageView() {
+        stackView.addArrangedSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
-        imageView.widthAnchor.constraint(equalToConstant: Constants.imageSize.width).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: Constants.imageSize.height).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 24).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 24).isActive = true
     }
 
     private func configureTitleLabel() {
+        stackView.addArrangedSubview(titleLabel)
         titleLabel.numberOfLines = 2
         titleLabel.lineBreakMode = .byWordWrapping
         titleLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        titleLabel.setContentCompressionResistancePriority(.required, for: .vertical)
+        titleLabel.setContentCompressionResistancePriority(.defaultHigh, for: .vertical)
         titleLabel.isHidden = true
-    }
-
-    @objc
-    private func onViewTapped() {
-        delegate?.didTap(on: self)
-    }
-}
-
-private extension BubbleTabBarItemView {
-    struct Constants {
-        static let horizontalPadding: CGFloat = 8
-        static let verticalPadding: CGFloat = 10
-        static let spacing: CGFloat = 6
-        static let imageSize: CGSize = .init(width: 24, height: 24)
     }
 }

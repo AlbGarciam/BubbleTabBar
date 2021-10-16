@@ -20,14 +20,19 @@ open class BubbleTabBarViewController: UIViewController {
         get { tabBarView.font }
     }
 
-    public var selectedItemColor: UIColor {
-        get { tabBarView.backgroundViewColor }
-        set { tabBarView.backgroundViewColor = newValue }
+    public var selectedContentColor: UIColor {
+        get { tabBarView.selectedContentColor }
+        set { tabBarView.selectedContentColor = newValue }
     }
 
-    public var tintColor: UIColor {
-        get { tabBarView.tintColor }
-        set { tabBarView.tintColor = newValue }
+    public var unselectedContentColor: UIColor {
+        get { tabBarView.unselectedContentColor }
+        set { tabBarView.unselectedContentColor = newValue }
+    }
+
+    public var selectedBackgroundColor: UIColor {
+        get { tabBarView.selectedBackgroundColor }
+        set { tabBarView.selectedBackgroundColor = newValue }
     }
 
     public var tabBarBackgroundColor: UIColor {

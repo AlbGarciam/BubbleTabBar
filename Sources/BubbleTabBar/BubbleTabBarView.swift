@@ -11,7 +11,6 @@ final class BubbleTabBarView: UIView {
     private lazy var mainStackView = UIStackView(arrangedSubviews: [tabsStackView])
     private lazy var tabsStackView = UIStackView()
     private let cardView = UIView()
-    private let backgroundView = UIView()
     weak var delegate: BubbleTabBarViewDelegate?
     var font: UIFont = .systemFont(ofSize: 8, weight: .semibold) {
         didSet {
@@ -21,23 +20,31 @@ final class BubbleTabBarView: UIView {
         }
     }
 
-    var backgroundViewColor: UIColor = .clear {
+    var selectedContentColor: UIColor = .white {
         didSet {
-            backgroundView.backgroundColor = backgroundViewColor
+            tabsStackView.subviews
+                .compactMap { $0 as? BubbleTabBarItemView }
+                .forEach { $0.selectedContentColor = selectedContentColor }
+        }
+    }
+    var unselectedContentColor: UIColor = .black {
+        didSet {
+            tabsStackView.subviews
+                .compactMap { $0 as? BubbleTabBarItemView }
+                .forEach { $0.unselectedContentColor = unselectedContentColor }
+        }
+    }
+    var selectedBackgroundColor: UIColor = .black {
+        didSet {
+            tabsStackView.subviews
+                .compactMap { $0 as? BubbleTabBarItemView }
+                .forEach { $0.selectedBackgroundColor = selectedBackgroundColor }
         }
     }
 
     override var backgroundColor: UIColor? {
         get { cardView.backgroundColor }
         set { cardView.backgroundColor = newValue }
-    }
-
-    override var tintColor: UIColor! {
-        didSet {
-            tabsStackView.subviews
-                .compactMap { $0 as? BubbleTabBarItemView }
-                .forEach { $0.tintColor = tintColor }
-        }
     }
 
     convenience init() {
@@ -58,37 +65,23 @@ final class BubbleTabBarView: UIView {
         tabsStackView.subviews.forEach { $0.removeFromSuperview() }
         items
             .map {
-                let view = BubbleTabBarItemView()
-                view.setTitle($0.title)
-                view.setCollapsedIcon($0.collapsedIcon)
-                view.setExpandedIcon($0.expandedIcon)
-                view.tintColor = self.tintColor
+                let item = BubbleTabBarItem(expandedIcon: $0.expandedIcon,
+                                            collapsedIcon: $0.collapsedIcon,
+                                            title: $0.title)
+                let view = BubbleTabBarItemView(item: item) { [weak self] item in
+                    self?.didTap(on: item)
+                }
                 view.setTitleFont(self.font)
                 view.collapse()
-                view.delegate = self
+                view.selectedContentColor = selectedContentColor
+                view.unselectedContentColor = unselectedContentColor
+                view.selectedBackgroundColor = selectedBackgroundColor
                 return view
             }
             .forEach { self.tabsStackView.addArrangedSubview($0) }
         if let firstTab = tabsStackView.subviews.first as? BubbleTabBarItemView {
             firstTab.expand()
             tabsStackView.layoutIfNeeded()
-            moveBackground(to: firstTab)
-        }
-    }
-
-    override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        let tabs = tabsStackView.subviews
-        if let selected = tabs.compactMap({ $0 as? BubbleTabBarItemView }).first(where: { !$0.isCollapsed }) {
-            moveBackground(to: selected)
-        }
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        let tabs = tabsStackView.subviews
-        if let selected = tabs.compactMap({ $0 as? BubbleTabBarItemView }).first(where: { !$0.isCollapsed }) {
-            moveBackground(to: selected)
         }
     }
 
@@ -98,7 +91,7 @@ final class BubbleTabBarView: UIView {
             view.alpha = 0
             self?.mainStackView.insertArrangedSubview(view, at: 0)
             self?.mainStackView.layoutIfNeeded()
-            UIView.animate(withDuration: 0.2, animations: {
+            UIView.animate(withDuration: 0.25, animations: {
                 view.alpha = 1
                 view.isHidden = false
                 self?.mainStackView.layoutIfNeeded()
@@ -114,7 +107,7 @@ final class BubbleTabBarView: UIView {
                 completion?()
                 return
         }
-        UIView.animate(withDuration: 0.2, animations: { [weak self] in
+        UIView.animate(withDuration: 0.25, animations: { [weak self] in
             subview.alpha = 0
             subview.isHidden = true
             self?.mainStackView.layoutIfNeeded()
@@ -136,7 +129,6 @@ private extension BubbleTabBarView {
         configureMainStackView()
         configureTabsStackView()
         configureBackground()
-        configureBackgroundView()
         layoutIfNeeded()
     }
 
@@ -152,15 +144,10 @@ private extension BubbleTabBarView {
         mainStackView.axis = .vertical
         mainStackView.spacing = 10
         addSubview(mainStackView)
-        mainStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalPadding).isActive = true
-        mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constants.horizontalPadding).isActive = true
-        mainStackView.topAnchor.constraint(equalTo: topAnchor, constant: Constants.verticalPadding).isActive = true
-        let centerX = mainStackView.centerXAnchor.constraint(equalTo: centerXAnchor)
-        centerX.priority = .defaultHigh
-        centerX.isActive = true
-        let centerY = mainStackView.centerYAnchor.constraint(equalTo: centerYAnchor)
-        centerY.priority = .defaultHigh
-        centerY.isActive = true
+        mainStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 3).isActive = true
+        mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -3).isActive = true
+        mainStackView.topAnchor.constraint(equalTo: topAnchor, constant: 3).isActive = true
+        mainStackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -3).isActive = true
     }
 
     func configureBackground() {
@@ -174,38 +161,16 @@ private extension BubbleTabBarView {
         cardView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
     }
 
-    func configureBackgroundView() {
-        backgroundView.backgroundColor = backgroundViewColor
-        backgroundView.layer.masksToBounds = true
-        backgroundView.layer.cornerRadius = Constants.backgroundViewCornerRadius
-        insertSubview(backgroundView, belowSubview: mainStackView)
-    }
-
-    func moveBackground(to subview: UIView) {
-        subview.layoutIfNeeded()
-        var destinationFrame = subview.convert(subview.bounds, to: self)
-        let maxXPosition = max(Constants.horizontalPadding, destinationFrame.minX)
-        let minYPosition = max(Constants.verticalPadding, destinationFrame.minY)
-        destinationFrame.origin = CGPoint(x: maxXPosition, y: minYPosition)
-        let options: UIView.AnimationOptions = [.curveEaseInOut, .layoutSubviews]
-        UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
-            self.backgroundView.frame = destinationFrame
-        }, completion: nil)
-    }
-
     func switchTab(to newTab: BubbleTabBarItemView, from oldTab: BubbleTabBarItemView?) {
         let options: UIView.AnimationOptions = [.curveEaseInOut, .layoutSubviews]
         UIView.animate(withDuration: 0.2, delay: 0, options: options, animations: {
             newTab.expand()
             oldTab?.collapse()
         }, completion: { _ in
-            self.moveBackground(to: newTab)
             self.layoutIfNeeded()
         })
     }
-}
 
-extension BubbleTabBarView: BubbleTabBarItemViewDelegate {
     func didTap(on itemView: BubbleTabBarItemView) {
         if itemView.isCollapsed {
             let tabs = tabsStackView.subviews.compactMap { $0 as? BubbleTabBarItemView }
@@ -222,8 +187,6 @@ extension BubbleTabBarView: BubbleTabBarItemViewDelegate {
 
 private extension BubbleTabBarView {
     struct Constants {
-        static let horizontalPadding: CGFloat = 3
-        static let verticalPadding: CGFloat = 3
         static let spacing: CGFloat = 10
         static let backgroundCornerRadius: CGFloat = 15
         static let backgroundViewCornerRadius: CGFloat = 14
